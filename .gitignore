@@ -64,11 +64,6 @@ fabric.properties
 
 ### PyCharm Patch ###
 
-# *.iml
-# modules.xml
-# .idea/misc.xml
-# *.ipr
-
 # Sonarlint plugin
 .idea/**/sonarlint/
 
@@ -217,6 +212,9 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# PyCharm
+.idea/
 
 ### Python Patch ###
 poetry.toml
