@@ -112,10 +112,57 @@ class FinanceManager:
     def display_balance(self):
         print(f"Actualmente tiene ${self.balance:.2f}")
 
+    def filter_transactions(self, category=None, t_type=None, date_from=None, date_to=None):
+        filtered = self.transactions
+
+        if category:
+            filtered = [t for t in filtered if t.category.lower() == category.lower()]
+
+        if t_type:
+            filtered = [t for t in filtered if t.type.lower() == t_type.lower()]
+
+        if date_from:
+            filtered = [t for t in filtered if t.transaction_date >= date_from]
+
+        if date_to:
+            filtered = [t for t in filtered if t.transaction_date <= date_to]
+
+        return filtered
+
     def display_transactions(self):
         if self.transactions:
+            # Mostrar opciones disponibles al usuario
+            categories = sorted(set(t.category.lower() for t in self.transactions))
+            types = sorted(set(t.type for t in self.transactions))
+
+            print("\nCategorías disponibles:", ", ".join(categories))
+            category = input("Filtrar por categoría (dejar vacío para ignorar): ").strip()
+
+            print("Tipos disponibles:", ", ".join(types))
+            t_type = input("Filtrar por tipo (Gasto / Ingreso, dejar vacío para ignorar): ").strip()
+
+            try:
+                date_from = input("Filtrar desde (dd/mm/yy, dejar vacío para ignorar): ").strip()
+                date_from = datetime.strptime(date_from, "%d/%m/%y").date() if date_from else None
+
+                date_to = input("Filtrar hasta (dd/mm/yy, dejar vacío para ignorar): ").strip()
+                date_to = datetime.strptime(date_to, "%d/%m/%y").date() if date_to else None
+            except ValueError:
+                print("Formato de fecha inválido. Se ignorarán los filtros por fecha.")
+                date_from, date_to = None, None
+
+            results = self.filter_transactions(
+                category=category if category else None,
+                t_type=t_type if t_type else None,
+                date_from=date_from,
+                date_to=date_to
+            )
+
             print("***** TRANSACCIONES *****")
-            print(*self.transactions, sep="\n")
+            if results:
+                print(*results, sep="\n")
+            else:
+                print("No se encontraron transacciones con esos criterios.")
         else:
             print("Actualmente no hay transacciones.")
 
@@ -213,16 +260,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-### Future work ###
-
-# Commit? (Readme)
-
-# Filtros (categoría, fecha, tipo,...) o Guardar y cargar datos automáticamente
-# Pruebas unitarias
-# Commit (Readme)
-
-# Refactorizar en módulos
-# Visualizaciones gráficas
-# sesiones/usuarios?
-# Mejorar el display de menú y transacciones (alineadas)
