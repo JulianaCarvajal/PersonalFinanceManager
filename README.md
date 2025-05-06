@@ -10,7 +10,8 @@ Gestor de Finanzas Personales.
 - Visualización de transacciones
 - Visualización de balance actual
 - Edición de transacciones
-- Eliminación de transacciones 
+- Eliminación de transacciones
+- Carga y guardado automático de datos en archivo JSON
 - Test básico con `pytest` para validar comportamiento del sistema
 
 ---
@@ -70,6 +71,7 @@ PersonalFinanceManager/
 ├── .gitignore
 ├── requirements.txt
 ├── README.md
+├── transactions.json          # Ignorado por Git
 ├── tests/
 │   └── test_finance_manager.py
 ```

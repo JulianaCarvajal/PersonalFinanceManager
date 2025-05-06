@@ -250,3 +250,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Generated local data
+transactions.json

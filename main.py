@@ -1,4 +1,7 @@
+import json
+
 from datetime import date, datetime
+from os.path import exists
 
 class Transaction:
 
@@ -10,17 +13,55 @@ class Transaction:
         self.description = description
         self.transaction_date = transaction_date if transaction_date else date.today()
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "type": self.type,
+            "amount": self.amount,
+            "category": self.category,
+            "description": self.description,
+            "transaction_date": self.transaction_date.strftime("%d/%m/%y")
+        }
+
     def __str__(self):
         return (f"[{self.id}] {self.type} - ${self.amount:,.2f} | {self.category} | "
                 f"{self.description} | {self.transaction_date.strftime('%d/%m/%y')}")
 
 class FinanceManager:
-    def __init__(self):
+    def __init__(self, filename="transactions.json"):
+        self.filename = filename
         self.transactions = []
         self.next_id = 1
         self.balance = 0
+        self.load_from_file()
 
-    def add_transaction(self, transaction):
+    def load_from_file(self):
+        if not exists(self.filename):
+            return
+
+        with open(self.filename, "r", encoding="utf-8") as json_file:
+            data = json.load(json_file)
+
+        for transaction_data in data:
+            transaction = Transaction(
+                transaction_data["type"],
+                transaction_data["amount"],
+                transaction_data["category"],
+                transaction_data.get("description"),
+                datetime.strptime(transaction_data["transaction_date"], "%d/%m/%y").date()
+            )
+            self.add_transaction(transaction, show_message=False)
+
+        # Ensure next ID is not repeated
+        if self.transactions:
+            self.next_id = max(t.id for t in self.transactions) + 1
+
+    def save_to_file(self):
+        transaction_data = [t.to_dict() for t in self.transactions]
+        with open(self.filename, 'w', encoding="utf-8") as json_file:
+            json.dump(transaction_data, json_file, ensure_ascii=False, indent=4)
+
+    def add_transaction(self, transaction, show_message=True):
         self.transactions.append(transaction)
         transaction.id = self.next_id
         self.next_id += 1
@@ -28,7 +69,8 @@ class FinanceManager:
             self.balance -= transaction.amount
         elif transaction.type == "Ingreso":
             self.balance += transaction.amount
-        print(f"Transacción agregada exitosamente.")
+        if show_message:
+            print(f"Transacción agregada exitosamente.")
 
     def find_transaction_by_id(self, transaction_id):
         for transaction in self.transactions:
@@ -180,83 +222,87 @@ def display_menu():
 
 def main():
     # Create FinanceManager instance
-    manager = FinanceManager()
+    filename = input("Nombre del archivo de transacciones (por defecto: transactions.json): ").strip()
+    manager = FinanceManager(filename or "transactions.json")
 
-    while True:
-        display_menu()
+    try:
+        while True:
+            display_menu()
 
-        try:
-            choice = int(input("Seleccione una opción: "))
-        except ValueError:
-            print("Debe ingresar un número.")
-            continue
+            try:
+                choice = int(input("Seleccione una opción: "))
+            except ValueError:
+                print("Debe ingresar un número.")
+                continue
 
-        match choice:
-            # Add income/expense
-            case 1|2:
-                type = "Gasto" if choice == 1 else "Ingreso"
+            match choice:
+                # Add income/expense
+                case 1|2:
+                    type = "Gasto" if choice == 1 else "Ingreso"
 
-                while True:
-                    try:
-                        amount = float(input(f"Ingrese el monto del {type.lower()}: $"))
-                        if amount <= 0:
-                            print("Debe ingresar un número positivo.")
-                            continue
-                        break
-                    except ValueError:
-                        print("Debe ingresar un número.")
-
-                while True:
-                    category = input("Ingrese la categoría: ")
-                    if category:
-                        break
-                    print("Debe ingresar la categoría.")
-
-                description = input("Ingrese la descripción (opcional): ")
-
-                while True:
-                    try:
-                        transaction_date = input("Fecha (dd/mm/yy) o dejar en blanco para hoy: ")
-                        if transaction_date:
-                            transaction_date = datetime.strptime(transaction_date, "%d/%m/%y").date()
-                        break
-                    except ValueError:
-                        print("Por favor ingrese el formato solicitado.")
-
-                transaction = Transaction(type, amount, category, description, transaction_date)
-                manager.add_transaction(transaction)
-
-            case 3:
-                manager.display_balance()
-
-            case 4:
-                manager.display_transactions()
-
-            # Edit/delete transaction
-            case 5|6:
-                if not manager.transactions:
-                    print("Actualmente no hay transacciones.")
-                    continue
-
-                action = manager.edit_transaction if choice == 5 else manager.delete_transaction
-                while True:
-                    try:
-                        transaction_id = int(input("Ingrese el ID de la transacción: "))
-                        transaction = action(transaction_id)
-                        if transaction:
+                    while True:
+                        try:
+                            amount = float(input(f"Ingrese el monto del {type.lower()}: $"))
+                            if amount <= 0:
+                                print("Debe ingresar un número positivo.")
+                                continue
                             break
-                    except ValueError:
-                        print("Debe ingresar un número.")
+                        except ValueError:
+                            print("Debe ingresar un número.")
 
-            # Quit
-            case 7:
-                print("Hasta la próxima!")
-                break
+                    while True:
+                        category = input("Ingrese la categoría: ")
+                        if category:
+                            break
+                        print("Debe ingresar la categoría.")
 
-            # Anything else
-            case _:
-                print("Opción inválida")
+                    description = input("Ingrese la descripción (opcional): ")
+
+                    while True:
+                        try:
+                            transaction_date = input("Fecha (dd/mm/yy) o dejar en blanco para hoy: ")
+                            if transaction_date:
+                                transaction_date = datetime.strptime(transaction_date, "%d/%m/%y").date()
+                            break
+                        except ValueError:
+                            print("Por favor ingrese el formato solicitado.")
+
+                    transaction = Transaction(type, amount, category, description, transaction_date)
+                    manager.add_transaction(transaction)
+
+                case 3:
+                    manager.display_balance()
+
+                case 4:
+                    manager.display_transactions()
+
+                # Edit/delete transaction
+                case 5|6:
+                    if not manager.transactions:
+                        print("Actualmente no hay transacciones.")
+                        continue
+
+                    action = manager.edit_transaction if choice == 5 else manager.delete_transaction
+                    while True:
+                        try:
+                            transaction_id = int(input("Ingrese el ID de la transacción: "))
+                            transaction = action(transaction_id)
+                            if transaction:
+                                break
+                        except ValueError:
+                            print("Debe ingresar un número.")
+
+                # Quit
+                case 7:
+                    manager.save_to_file()
+                    print("Hasta la próxima!")
+                    break
+
+                # Anything else
+                case _:
+                    print("Opción inválida")
+    finally:
+        manager.save_to_file()
 
 if __name__ == "__main__":
     main()
-
