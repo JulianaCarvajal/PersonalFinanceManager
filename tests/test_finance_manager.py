@@ -1,7 +1,9 @@
 import pytest
 
 from datetime import date
-from main import Transaction, FinanceManager
+
+from manager import FinanceManager
+from models import Transaction
 
 class TestFinanceManager:
     def test_add_transaction(self):

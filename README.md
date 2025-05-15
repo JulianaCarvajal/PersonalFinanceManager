@@ -68,6 +68,8 @@ PYTHONPATH=. pytest
 PersonalFinanceManager/
 │
 ├── main.py
+├── manager.py
+├── models.py
 ├── .gitignore
 ├── requirements.txt
 ├── README.md
