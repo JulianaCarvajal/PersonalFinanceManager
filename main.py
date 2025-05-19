@@ -1,9 +1,10 @@
+from collections.abc import Callable
 from datetime import datetime
 
 from manager import FinanceManager
 from models import Transaction
 
-def display_menu():
+def display_menu() -> None:
     print("")
     print("***** MENÚ *****")
     print("1. Agregar gasto")
@@ -15,13 +16,14 @@ def display_menu():
     print("7. Salir")
     print("")
 
-def main():
+def main() -> None:
     # Create FinanceManager instance
     filename = input("Nombre del archivo de transacciones (por defecto: transactions.json): ").strip()
     manager = FinanceManager(filename or "transactions.json")
 
     try:
         while True:
+            #manager.month_summary()
             display_menu()
 
             try:
@@ -55,9 +57,9 @@ def main():
 
                     while True:
                         try:
-                            transaction_date = input("Fecha (dd/mm/yy) o dejar en blanco para hoy: ")
-                            if transaction_date:
-                                transaction_date = datetime.strptime(transaction_date, "%d/%m/%y").date()
+                            transaction_date_input = input("Fecha (dd/mm/yy) o dejar en blanco para hoy: ")
+                            transaction_date = datetime.strptime(transaction_date_input,
+                                                                 "%d/%m/%y").date() if transaction_date_input else None
                             break
                         except ValueError:
                             print("Por favor ingrese el formato solicitado.")
@@ -77,7 +79,8 @@ def main():
                         print("Actualmente no hay transacciones.")
                         continue
 
-                    action = manager.edit_transaction if choice == 5 else manager.delete_transaction
+                    action: Callable[[
+                        int], Transaction | None] = manager.edit_transaction if choice == 5 else manager.delete_transaction
                     while True:
                         try:
                             transaction_id = int(input("Ingrese el ID de la transacción: "))
@@ -101,3 +104,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

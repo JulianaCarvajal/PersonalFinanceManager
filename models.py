@@ -1,16 +1,18 @@
 from datetime import date
+from typing import Any
+
 
 class Transaction:
 
-    def __init__(self, t_type, amount, category, description=None, transaction_date=None):
-        self.id = -1
-        self.t_type = t_type
-        self.amount = amount
-        self.category = category
-        self.description = description
-        self.transaction_date = transaction_date if transaction_date else date.today()
+    def __init__(self, t_type: str, amount: float, category: str, description: str | None = None, transaction_date: date | None = None) -> None:
+        self.id: int = -1
+        self.t_type: str = t_type
+        self.amount: float = amount
+        self.category: str = category.lower()
+        self.description: str | None = description.lower()
+        self.transaction_date = transaction_date or date.today()
 
-    def to_dict(self):
+    def to_dict(self) -> dict[str, Any]:
         return {
             "id": self.id,
             "t_type": self.t_type,
@@ -20,6 +22,6 @@ class Transaction:
             "transaction_date": self.transaction_date.strftime("%d/%m/%y")
         }
 
-    def __str__(self):
-        return (f"[{self.id}] {self.t_type} - ${self.amount:,.2f} | {self.category} | "
-                f"{self.description} | {self.transaction_date.strftime('%d/%m/%y')}")
+    def __str__(self) -> str:
+        return (f"[{self.id}] {self.t_type} - ${self.amount:,.2f} | {self.category.capitalize()} | "
+                f"{self.description.capitalize()} | {self.transaction_date.strftime('%d/%m/%y')}")

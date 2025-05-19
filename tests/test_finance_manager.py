@@ -6,7 +6,7 @@ from manager import FinanceManager
 from models import Transaction
 
 class TestFinanceManager:
-    def test_add_transaction(self):
+    def test_add_transaction(self) -> None:
         manager = FinanceManager()
         t1 = Transaction("Gasto", 5000, "Comida")
         manager.add_transaction(t1)
@@ -24,7 +24,7 @@ class TestFinanceManager:
         assert manager.next_id == 3
         assert manager.balance == 5000
 
-    def test_find_transaction_by_id(self):
+    def test_find_transaction_by_id(self) -> None:
         manager = FinanceManager()
         t = Transaction("Gasto", 5000, "Comida")
         manager.add_transaction(t)
@@ -34,7 +34,7 @@ class TestFinanceManager:
         assert t_found.amount == 5000
         assert manager.find_transaction_by_id(999) is None
 
-    def test_filter_by_category(self):
+    def test_filter_by_category(self) -> None:
         manager = FinanceManager()
         t1 = Transaction("Gasto", 5000, "Comida")
         t2 = Transaction("Ingreso", 10000, "Salario")
@@ -46,7 +46,7 @@ class TestFinanceManager:
         result = manager.filter_transactions(category="comida")
         assert result == [t1, t3]
 
-    def test_filter_by_type(self):
+    def test_filter_by_type(self) -> None:
         manager = FinanceManager()
         t1 = Transaction("Gasto", 5000, "Comida")
         t2 = Transaction("Ingreso", 10000, "Salario")
@@ -58,7 +58,7 @@ class TestFinanceManager:
         result = manager.filter_transactions(t_type="Ingreso")
         assert result == [t2]
 
-    def test_filter_by_date(self):
+    def test_filter_by_date(self) -> None:
         manager = FinanceManager()
         t1 = Transaction("Gasto", 5000, "Comida", transaction_date=date(2001, 1, 1))
         t2 = Transaction("Ingreso", 10000, "Salario", transaction_date=date(2001, 6, 15))
@@ -72,7 +72,7 @@ class TestFinanceManager:
         assert result1 == [t3]
         assert result2 == [t1, t2]
 
-    def test_filter_by_category_and_type(self):
+    def test_filter_by_category_and_type(self) -> None:
         manager = FinanceManager()
         t1 = Transaction("Gasto", 5000, "Comida")
         t2 = Transaction("Ingreso", 10000, "Salario")
@@ -84,7 +84,7 @@ class TestFinanceManager:
         result = manager.filter_transactions(category="Comida", t_type="Gasto")
         assert result == [t1]
 
-    def test_save_and_load_file(self, tmp_path):
+    def test_save_and_load_file(self, tmp_path) -> None:
         # Temporary file
         test_file = tmp_path / "test_transactions.json"
 
@@ -106,6 +106,6 @@ class TestFinanceManager:
         new_manager.load_from_file()
 
         assert len(new_manager.transactions) == 3
-        assert new_manager.transactions[0].category == "Comida"
+        assert new_manager.transactions[0].category == "comida"
         assert new_manager.transactions[1].amount == 10000
         assert new_manager.balance == 4000
