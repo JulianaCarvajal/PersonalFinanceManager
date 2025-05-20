@@ -182,11 +182,28 @@ class FinanceManager:
                 date_to=date_to
             )
 
-            print("***** TRANSACCIONES *****")
+            print(f"\n{"TRANSACCIONES":*^70}")
             if results:
                 print(*results, sep="\n")
             else:
                 print("No se encontraron transacciones con esos criterios.")
         else:
             print("Actualmente no hay transacciones.")
+
+    def get_monthly_summary_by_category(self, month: int, year: int) -> dict[str, float]:
+        summary = {}
+        for t in self.transactions:
+            if t.t_type == "Gasto" and t.transaction_date.month == month and t.transaction_date.year == year:
+                summary[t.category] = summary.get(t.category, 0) + t.amount
+        return summary
+
+    def print_monthly_summary(self, month: int, year: int) -> None:
+        summary = self.get_monthly_summary_by_category(month, year)
+        if summary:
+            print(f"\nGastos por categoría - {month:02d}/{year}")
+            print("-" * 35)
+            for category, amount in sorted(summary.items(), key=lambda x: x[1], reverse=True):
+                print(f"{category.capitalize():<20} ${amount:,.2f}")
+        else:
+            print(f"No tienes gastos registrados para {month:02d}/{year}")
 

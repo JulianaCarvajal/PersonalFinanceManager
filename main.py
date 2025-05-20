@@ -6,14 +6,15 @@ from models import Transaction
 
 def display_menu() -> None:
     print("")
-    print("***** MENÚ *****")
+    print(f"{" MENÚ ":*^30}")
     print("1. Agregar gasto")
     print("2. Agregar ingreso")
     print("3. Ver balance")
     print("4. Ver transacciones")
     print("5. Editar transacción")
     print("6. Eliminar transacción")
-    print("7. Salir")
+    print("7. Ver gastos mensuales por categoría ")
+    print("8. Salir")
     print("")
 
 def main() -> None:
@@ -90,8 +91,24 @@ def main() -> None:
                         except ValueError:
                             print("Debe ingresar un número.")
 
-                # Quit
                 case 7:
+                    while True:
+                        try:
+                            month = int(input("Mes (1-12): "))
+                            if month < 1 or month > 12:
+                                print("El mes debe ser un número entre 1 y 12")
+                                continue
+                            year = int(input("Año: "))
+                            if year <= 0:
+                                print("El año debe ser un número positivo")
+                                continue
+                            break
+                        except ValueError:
+                            print("Por favor ingrese solo números enteros")
+                    manager.print_monthly_summary(month, year)
+
+                # Quit
+                case 8:
                     manager.save_to_file()
                     print("Hasta la próxima!")
                     break

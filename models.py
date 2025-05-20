@@ -9,7 +9,7 @@ class Transaction:
         self.t_type: str = t_type
         self.amount: float = amount
         self.category: str = category.lower()
-        self.description: str | None = description.lower()
+        self.description: str | None = description.lower() if description else None
         self.transaction_date = transaction_date or date.today()
 
     def to_dict(self) -> dict[str, Any]:
@@ -23,5 +23,5 @@ class Transaction:
         }
 
     def __str__(self) -> str:
-        return (f"[{self.id}] {self.t_type} - ${self.amount:,.2f} | {self.category.capitalize()} | "
-                f"{self.description.capitalize()} | {self.transaction_date.strftime('%d/%m/%y')}")
+        return (f"[{self.id}] {self.t_type:<8} | ${self.amount:<14,.2f} | {self.category.capitalize():<13} | "
+                f"{self.description.capitalize():<10} | {self.transaction_date.strftime('%d/%m/%y')}")

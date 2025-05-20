@@ -109,3 +109,17 @@ class TestFinanceManager:
         assert new_manager.transactions[0].category == "comida"
         assert new_manager.transactions[1].amount == 10000
         assert new_manager.balance == 4000
+
+    def test_monthly_summary(self):
+        manager = FinanceManager()
+        t1 = Transaction("Gasto", 5000, "Comida", transaction_date=date(2001, 1, 1))
+        t2 = Transaction("Ingreso", 10000, "Salario", transaction_date=date(2001, 6, 15))
+        t3 = Transaction("Gasto", 1000, "transporte", transaction_date=date(2001, 1, 30))
+        manager.add_transaction(t1)
+        manager.add_transaction(t2)
+        manager.add_transaction(t3)
+
+        result1 = manager.get_monthly_summary_by_category(1, 2001)
+        result2 = manager.get_monthly_summary_by_category(6, 2001)
+        assert result1 == {"comida": 5000, "transporte": 1000}
+        assert result2 == {}
