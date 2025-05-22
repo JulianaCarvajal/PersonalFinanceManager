@@ -121,5 +121,5 @@ class TestFinanceManager:
 
         result1 = manager.get_monthly_summary_by_category(1, 2001)
         result2 = manager.get_monthly_summary_by_category(6, 2001)
-        assert result1 == {"comida": 5000, "transporte": 1000}
-        assert result2 == {}
+        assert result1 == [('comida', 5000), ('transporte', 1000)]
+        assert result2 == []

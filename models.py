@@ -23,5 +23,6 @@ class Transaction:
         }
 
     def __str__(self) -> str:
+        self.description = self.description.capitalize() if self.description else ""
         return (f"[{self.id}] {self.t_type:<8} | ${self.amount:<14,.2f} | {self.category.capitalize():<13} | "
-                f"{self.description.capitalize():<10} | {self.transaction_date.strftime('%d/%m/%y')}")
+                f"{self.description:<10} | {self.transaction_date.strftime('%d/%m/%y')}")

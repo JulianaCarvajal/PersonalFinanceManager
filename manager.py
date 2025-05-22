@@ -1,4 +1,6 @@
 import json
+import matplotlib.pyplot as plt
+import numpy as np
 
 from datetime import date, datetime
 from os.path import exists
@@ -190,20 +192,53 @@ class FinanceManager:
         else:
             print("Actualmente no hay transacciones.")
 
-    def get_monthly_summary_by_category(self, month: int, year: int) -> dict[str, float]:
+    def get_monthly_summary_by_category(self, month: int, year: int) -> list[tuple[str, float]]:
         summary = {}
         for t in self.transactions:
             if t.t_type == "Gasto" and t.transaction_date.month == month and t.transaction_date.year == year:
                 summary[t.category] = summary.get(t.category, 0) + t.amount
-        return summary
+        sorted_summary = sorted(summary.items(), key=lambda x: x[1], reverse=True)
+        return sorted_summary
 
     def print_monthly_summary(self, month: int, year: int) -> None:
         summary = self.get_monthly_summary_by_category(month, year)
         if summary:
             print(f"\nGastos por categoría - {month:02d}/{year}")
             print("-" * 35)
-            for category, amount in sorted(summary.items(), key=lambda x: x[1], reverse=True):
+            for category, amount in summary:
                 print(f"{category.capitalize():<20} ${amount:,.2f}")
+            self.plot_monthly_summary_by_category(month, year)
         else:
             print(f"No tienes gastos registrados para {month:02d}/{year}")
 
+    def plot_monthly_summary_by_category(self, month: int, year: int) -> None:
+        summary = self.get_monthly_summary_by_category(month, year)
+        if not summary:
+            print(f"No hay datos para {month:02d}/{year}.")
+            return
+
+        categories = [item[0] for item in summary]
+        amounts = [item[1] for item in summary]
+        explode = [0.1 if i == 0 else 0 for i in range(len(categories))]
+
+        fig, ax = plt.subplots(figsize=(6, 6))
+
+        wedges, texts = ax.pie(
+            amounts,
+            labels=[c.capitalize() for c in categories],
+            wedgeprops=dict(width=0.4),  # Donut width
+            startangle=90,
+            explode=explode
+        )
+
+        # Show amounts
+        for i, wedge in enumerate(wedges):
+            angle = (wedge.theta2 + wedge.theta1) / 2
+            x = 0.8 * np.cos(angle * np.pi / 180)
+            y = 0.8 * np.sin(angle * np.pi / 180)
+            ax.text(x, y, f"${amounts[i]:,.0f}", ha='center', va='center', fontsize=10,
+                    bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="none", alpha=0.7))
+
+        ax.set_title(f"Gastos por categoría - {month:02d}/{year}")
+        plt.tight_layout()
+        plt.show()

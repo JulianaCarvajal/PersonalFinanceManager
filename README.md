@@ -11,6 +11,7 @@ Gestor de Finanzas Personales.
 - Visualización de balance actual
 - Edición de transacciones
 - Eliminación de transacciones
+- Visualización gráfica con `matplotlib` de gastos mensuales por categoría
 - Carga y guardado automático de datos en archivo JSON
 - Test básico con `pytest` para validar comportamiento del sistema
 
@@ -45,6 +46,13 @@ Ejecutar el archivo principal:
 python main.py
 ```
 Se mostrará el menú del gestor y se podrá navegar utilizando la línea de comandos.
+
+---
+
+## 📊 Visualización de gastos
+
+El sistema permite mostrar los gastos de un mes determinado en un gráfico tipo **donut**, agrupados por categoría.
+
 
 ---
 

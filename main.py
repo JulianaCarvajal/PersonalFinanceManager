@@ -24,7 +24,6 @@ def main() -> None:
 
     try:
         while True:
-            #manager.month_summary()
             display_menu()
 
             try:
