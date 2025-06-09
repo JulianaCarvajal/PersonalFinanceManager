@@ -6,7 +6,7 @@ from models import Transaction
 
 def display_menu() -> None:
     print("")
-    print(f"{" MENÚ ":*^30}")
+    print(f"{' MENÚ ':*^30}")
     print("1. Agregar gasto")
     print("2. Agregar ingreso")
     print("3. Ver balance")
