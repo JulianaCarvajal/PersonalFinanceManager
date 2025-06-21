@@ -29,8 +29,10 @@ Gestor de Finanzas Personales.
    python -m venv .venv
    # PowerShell
    .\.venv\Scripts\Activate.ps1
-   # Git Bash
+   # Git Bash en Windows
    source .venv/Scripts/activate
+   # Linux/Mac
+   source .venv/bin/activate
    ```
 3. Instalar dependencias:
     ```bash

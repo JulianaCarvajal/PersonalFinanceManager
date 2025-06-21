@@ -184,7 +184,7 @@ class FinanceManager:
                 date_to=date_to
             )
 
-            print(f"\n{"TRANSACCIONES":*^70}")
+            print(f"\n{'TRANSACCIONES':*^72}")
             if results:
                 print(*results, sep="\n")
             else:
